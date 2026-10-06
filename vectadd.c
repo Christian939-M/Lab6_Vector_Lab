@@ -14,7 +14,7 @@
     Vect returnval;
     int values;
     printf("Assign at least 10 values for a: ");
-   //printf("The value is ");
+
    for(int i = 0; i<5; i++){
       scanf("%d", &values);
       a.value[i] = values;
