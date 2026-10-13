@@ -1,3 +1,8 @@
+/*
+ * File: vect_io.c
+ * Author: Christian Montoya
+ * date: 10/13/2026
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

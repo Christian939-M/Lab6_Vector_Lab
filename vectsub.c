@@ -1,7 +1,7 @@
 /*
  * File: vectsub.c
  * Author: Christian Montoya
- * date: 9/29/2026
+ * date: 10/13/2026
  */
 
  #include <stdio.h>
