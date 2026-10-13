@@ -18,7 +18,7 @@ extern VectNode *head;
 void load_csv(const char *filename);
 void save_csv(const char *filename);
 
-Vect assign(Vect a);
+Vect findvect(const char *name);
 Vect* add(Vect a, Vect b, const char *target_name);
 Vect* sub(Vect a, Vect b, const char *target_name);
 Vect* product(Vect a, Vect b, const char *target_name);

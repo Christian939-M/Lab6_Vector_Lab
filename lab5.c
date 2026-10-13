@@ -39,19 +39,19 @@ int main(void) {
             save_csv(line + 5);
         } 
         else if (strchr(line, '=')) {
-            if (strchr(line, '+') || strchr(line, '-')) {
+            if (strchr(line, '+') || strchr(line, '-') || strchr(line, '*')) {
                 char target_name[50];
                 char a_name[50], b_name[50];
                 char op;
-                
                 if (sscanf(line, "%49s = %49s %c %49s", target_name, a_name, &op, b_name) == 4) {
                     Vect *a = find_or_create_vector(a_name);
                     Vect *b = find_or_create_vector(b_name);
-                    
                     if (op == '+') {
                         add(*a, *b, target_name);
                     } else if (op == '-') {
                         sub(*a, *b, target_name);
+                    } else if (op == '*') {
+                        product(*a, *b, target_name);
                     }
                 }
             } else {
@@ -82,6 +82,19 @@ int main(void) {
                     }
                     printf(")\n");
                 }
+            }
+        } 
+        else {
+            Vect v = findvect(line);
+            if (strlen(v.name) > 0) {
+                printf("%s = (", v.name);
+                for (int j = 0; j < 10; j++) {
+                    printf("%d", v.value[j]);
+                    if (j < 9) printf(",");
+                }
+                printf(")\n");
+            } else {
+                printf("Unknown command or vector: %s\n", line);
             }
         }
     }
