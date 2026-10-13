@@ -10,9 +10,9 @@
  #include <math.h>
  #include "vect.h"
 
- char operation(Vect *a, Vect *b, char *target_name){
+ char operation(char *target_name, Vect **a, Vect **b){
     char op;
     printf("minimat>");
-    scanf("%49s = %49s %c %49s", target_name, a->name, &op, b->name);
+    scanf("%49s = %49s %c %49s", target_name, (*a)->name, &op, (*b)->name);
     return op;
  }
