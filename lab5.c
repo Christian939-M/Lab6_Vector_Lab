@@ -42,6 +42,7 @@ int main(void) {
             if (strchr(line, '+') || strchr(line, '-') || strchr(line, '*')) {
                 char target_name[50];
                 char a_name[50], b_name[50];
+                float multiple;
                 char op;
                 if (sscanf(line, "%49s = %49s %c %49s", target_name, a_name, &op, b_name) == 4) {
                     Vect *a = find_or_create_vector(a_name);
@@ -52,6 +53,13 @@ int main(void) {
                         sub(*a, *b, target_name);
                     } else if (op == '*') {
                         product(*a, *b, target_name);
+                    }
+                }
+                else if(sscanf(line, "%49s = %49s %c %f", target_name, a_name, &op, multiple) == 4){
+                  Vect *a = find_or_create_vector(a_name);
+                  Vect *b = find_or_create_vector(b_name);
+                  if (op == '*') {
+                        scalar(*a, *b, multiple);
                     }
                 }
             } else {

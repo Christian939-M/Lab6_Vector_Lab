@@ -22,7 +22,9 @@ Vect findvect(const char *name);
 Vect* add(Vect a, Vect b, const char *target_name);
 Vect* sub(Vect a, Vect b, const char *target_name);
 Vect* product(Vect a, Vect b, const char *target_name);
+Vect* scalar(Vect a, const char *target_name);
 char operation(char *target_name, Vect **a, Vect **b);
+
 
 Vect* find_or_create_vector(const char *name);
 void clear_vectors(void);
