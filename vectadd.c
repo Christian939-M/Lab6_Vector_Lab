@@ -10,28 +10,17 @@
  #include <math.h>
  #include "vect.h"
 
- Vect add(Vect a, Vect b){
-    Vect returnval;
-    int values;
-    printf("Assign at least 10 values for a: ");
-
-   for(int i = 0; i<5; i++){
-      scanf("%d", &values);
-      a.value[i] = values;
-    }
-
-    printf("Assign at least 10 values for b: ");
-   for(int i = 0; i<5; i++){
-      scanf("%d ", &values);
-      b.value[i] = values;
-    }
-    for(int i = 0; i<5; i++){
-        returnval.value[i] = a.value[i] + b.value[i];
-    }
-   printf("Values are: (");
-   for(int i = 0; i<5; i++){
-      printf("%d,", returnval.value[i]);
-    }
-    printf(")");
-    return returnval;
+ Vect add(Vect a, Vect b, const char *target_name){
+   Vect returnval;
+   strcpy(returnval.name, target_name);
+   for(int i = 0; i<10; i++){
+      returnval.value[i] = a.value[i] + b.value[i];
+   }
+   printf("Values of %s are: (",returnval.name);
+   for(int i = 0; i<10; i++){
+      printf("%d", returnval.value[i]);
+      if (i < 9) printf(",");
+   }
+   printf(")\n");
+   return returnval;
  }
