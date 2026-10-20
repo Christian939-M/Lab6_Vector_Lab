@@ -10,6 +10,27 @@
 #include <math.h>
 #include <stdbool.h>
 #include "vect.h"
+void list_vectors(void) {
+    VectNode *current = head;
+    int found = 0;
+    
+    while (current != NULL) {
+        if (strlen(current->vect.name) > 0) {
+            printf("%s = (", current->vect.name);
+            for (int j = 0; j < 10; j++) {
+                printf("%d", current->vect.value[j]);
+                if (j < 9) printf(",");
+            }
+            printf(")\n");
+            found = 1;
+        }
+        current = current->next;
+    }
+    
+    if (!found) {
+        printf("No vectors stored.\n");
+    }
+}
 void print_help(void) {
     printf("mini-mat Vector Calculator Help:\n");
     printf("  -h                        Display this help text\n");
@@ -46,6 +67,9 @@ int main(int argc, char *argv[]) {
         } 
         else if (strcmp(line, "-h") == 0) { 
             print_help();
+        }
+        else if (strcmp(line, "list") == 0) { 
+            list_vectors();
         }
         else if (strcmp(line, "clear") == 0) {
             clear_vectors();
