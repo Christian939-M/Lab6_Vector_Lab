@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-c -Wall
-SOURCES= lab5.c vectadd.c vectsub.c vector_product.c vect_operation.c vect_io.c find_or_creat_vector.c find_vect.c scalar.c vect_cross.c
+SOURCES= lab5.c vect.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=lab7
 
