@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-c -Wall
 SOURCES= lab5.c vect.c
 OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLE=lab7
+EXECUTABLE=lab5
 
 all: $(SOURCES) $(EXECUTABLE)
 

@@ -1,36 +1,14 @@
 /*
- * File: Lab7.c
+ * Filename: lab5.c
  * Author: Christian Montoya
- * date: 10/13/2026
+ * Date: 10/15/2026
+ * Description: make
  */
-
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <math.h>
-#include <stdbool.h>
+#include <stdlib.h>
 #include "vect.h"
-void list_vectors(void) {
-    VectNode *current = head;
-    int found = 0;
-    
-    while (current != NULL) {
-        if (strlen(current->vect.name) > 0) {
-            printf("%s = (", current->vect.name);
-            for (int j = 0; j < 10; j++) {
-                printf("%d", current->vect.value[j]);
-                if (j < 9) printf(",");
-            }
-            printf(")\n");
-            found = 1;
-        }
-        current = current->next;
-    }
-    
-    if (!found) {
-        printf("No vectors stored.\n");
-    }
-}
+
 void print_help(void) {
     printf("mini-mat Vector Calculator Help:\n");
     printf("  -h                        Display this help text\n");
@@ -47,118 +25,176 @@ void print_help(void) {
 }
 
 int main(int argc, char *argv[]) {
-    printf("Welcome to mini-mat! Type 'quit' to exit, '-h' for help info.\n");
-
-    atexit(free_all_memory);
-
-    char line[256];
-    int run = 1;
-
-    while (run) {
-        printf("minimat> ");
-        if (fgets(line, sizeof(line), stdin) == NULL) break;
-        
-        line[strcspn(line, "\r\n")] = 0;
-
-        if (strlen(line) == 0) continue;
-
-        if (strcmp(line, "quit") == 0) {
-            run = 0;
-        } 
-        else if (strcmp(line, "-h") == 0) { 
-            print_help();
-        }
-        else if (strcmp(line, "list") == 0) { 
-            list_vectors();
-        }
-        else if (strcmp(line, "clear") == 0) {
-            clear_vectors();
-            printf("Memory cleared.\n");
-        }
-        else if (strncmp(line, "load ", 5) == 0) {
-            load_csv(line + 5);
-        } 
-        else if (strncmp(line, "save ", 5) == 0) {
-            save_csv(line + 5);
-        } 
-        else if (strchr(line, '=')) {
-                if (strchr(line, '+') || strchr(line, '-') || strchr(line, '*') || strchr(line, 'x') || strchr(line, '.')) {
-                char target_name[50];
-                char a_name[50], b_name[50];
-                float multiple;
-                char op;
-
-                if (sscanf(line, "%49s = %49s %c %f", target_name, a_name, &op, &multiple) == 4 && op == '*') {
-                    Vect *a = find_or_create_vector(a_name);
-                    scalar(*a, multiple, target_name);
-                } 
-                else if (sscanf(line, "%49s = %49s %c %49s", target_name, a_name, &op, b_name) == 4) {
-                    Vect *a = find_or_create_vector(a_name);
-                    Vect *b = find_or_create_vector(b_name);
-                    if (op == '+') {
-                        add(*a, *b, target_name);
-                    } else if (op == '-') {
-                        sub(*a, *b, target_name);
-                    } else if (op == '*') {
-                        product(*a, *b, target_name);
-                    } else if (op == 'x') {
-                        cross_prod(*a, *b, target_name);
-                    } else {
-                        printf("Error: Unknown operator '%c'\n", op);
-                    }
-                } else {
-                    printf("Error: Invalid expression format.\n");
-                }
-            } 
-            else {
-                char name[50];
-                char line_copy[256];
-                strcpy(line_copy, line);
-
-                char *eq = strchr(line_copy, '=');
-                if (eq != NULL) {
-                    *eq = '\0';
-                    sscanf(line_copy, "%49s", name);
-                    
-                    Vect *v = find_or_create_vector(name);
-
-                    char *values_ptr = strchr(line, '=') + 1;
-                    int i = 0;
-                    char *token = strtok(values_ptr, " \t");
-                    while (token != NULL && i < 10) {
-                        v->value[i] = atoi(token);
-                        i++;
-                        token = strtok(NULL, " \t");
-                    }
-                    while (i < 10) {
-                        v->value[i] = 0;
-                        i++;
-                    }
-
-                    printf("%s = (", v->name);
-                    for(int j = 0; j < 10; j++){
-                        printf("%d", v->value[j]);
-                        if(j < 9) printf(",");
-                    }
-                    printf(")\n");
-                }
-            }
-        } 
-        else {
-            Vect v = findvect(line);
-            if (strlen(v.name) > 0) {
-                printf("%s = (", v.name);
-                for (int j = 0; j < 10; j++) {
-                    printf("%d", v.value[j]);
-                    if (j < 9) printf(",");
-                }
-                printf(")\n");
-            } else {
-                printf("Unknown command or vector: %s\n", line);
-            }
-        }
+    if (argc > 1 && strcmp(argv[1], "-h") == 0) {
+        print_help();
+        return 0;
     }
 
-    printf("done\n");
+    init_storage();
+    char line[256];
+
+    printf("Welcome to mini-mat! Type 'quit' to exit, '-h' for help info.\n");
+
+    while (1) {
+        printf("minimats> ");
+        if (fgets(line, sizeof(line), stdin) == NULL) {
+            break;
+        }
+
+        line[strcspn(line, "\r\n")] = 0;
+        if (strlen(line) == 0) continue;
+        if (strcmp(line, "quit") == 0) break;
+        if (strcmp(line, "-h") ==0) {print_help(); continue;}
+        if (strcmp(line, "clear") == 0) { clear_storage(); continue; }
+        if (strcmp(line, "list") == 0) { list_storage(); continue; }
+
+        char dest[NAME_LEN];
+        char rest[200];
+
+
+        if (sscanf(line, "%s = %199[^\n]", dest, rest) == 2) {
+            
+
+            char v1_name[NAME_LEN], op_str[10], v2_name[NAME_LEN];
+            double scalar_val;
+
+            if (sscanf(rest, "%s %s %s", v1_name, op_str, v2_name) == 3 && 
+                (strcmp(op_str, "+") == 0 || strcmp(op_str, "-") == 0 || strcmp(op_str, "x") == 0 || strcmp(op_str, ".") == 0)) {
+                
+                vect* v1 = find_vect(v1_name);
+                vect* v2 = find_vect(v2_name);
+                
+                if (!v1 || !v2) {
+                    printf("Error: One or both vectors do not exist.\n");
+                    continue;
+                }
+
+                vect res;
+                if (strcmp(op_str, "+") == 0) res = add_vect(*v1, *v2);
+                else if (strcmp(op_str, "-") == 0) res = sub_vect(*v1, *v2);
+                else if (strcmp(op_str, "x") == 0) res = cross_prod(*v1, *v2);
+                else if (strcmp(op_str, ".") == 0) {
+                    double dot = dot_prod(*v1, *v2);
+                    printf("%s = %.2f\n", dest, dot);
+                    continue;
+                }
+                
+                strcpy(res.name, dest);
+                add_to_storage(res);
+                printf("%s =", res.name);
+                for (int i = 0; i < 10; i++) printf(" %d", res.value[i]);
+                printf("\n");
+                continue;
+            }
+
+            if (sscanf(rest, "%s * %lf", v1_name, &scalar_val) == 2 || sscanf(rest, "%lf * %s", &scalar_val, v1_name) == 2) {
+                vect* v = find_vect(v1_name);
+                if (!v) {
+                    printf("Error: Vector '%s' does not exist.\n", v1_name);
+                    continue;
+                }
+                vect res = scalar_mult(*v, scalar_val);
+                strcpy(res.name, dest);
+                add_to_storage(res);
+                printf("%s =", res.name);
+                for (int i = 0; i < 10; i++) printf(" %d", res.value[i]);
+                printf("\n");
+                continue;
+            }
+
+  
+            vect new_v;
+            strcpy(new_v.name, dest);
+            for (int i = 0; i < 10; i++) new_v.value[i] = 0;
+
+            int vals[10];
+            int count = 0;
+            char rest_copy[200];
+            strcpy(rest_copy, rest);
+            char *token = strtok(rest_copy, ", ");
+            while (token != NULL && count < 10) {
+                vals[count++] = atoi(token);
+                token = strtok(NULL, ", ");
+            }
+
+            if (count > 0) {
+                for (int i = 0; i < count; i++) {
+                    new_v.value[i] = vals[i];
+                }
+                if (add_to_storage(new_v) != 0) {
+                    printf("Error: Storage full (max 10 vectors).\n");
+                } else {
+                    printf("%s =", new_v.name);
+                    for (int i = 0; i < 10; i++) printf(" %d", new_v.value[i]);
+                    printf("\n");
+                }
+                continue;
+            }
+        }
+
+
+        char v1_name[NAME_LEN], op_str[10], v2_name[NAME_LEN];
+        double scalar_val;
+
+        if (sscanf(line, "%s %s %s", v1_name, op_str, v2_name) == 3) {
+            vect* v1 = find_vect(v1_name);
+            vect* v2 = find_vect(v2_name);
+
+            if (!v1 || !v2) {
+                printf("Error: One or both vectors do not exist.\n");
+                continue;
+            }
+
+            if (strcmp(op_str, "+") == 0) {
+                vect res = add_vect(*v1, *v2);
+                printf("ans =");
+                for (int i = 0; i < 10; i++) printf(" %d", res.value[i]);
+                printf("\n");
+            } else if (strcmp(op_str, "-") == 0) {
+                vect res = sub_vect(*v1, *v2);
+                printf("ans =");
+                for (int i = 0; i < 10; i++) printf(" %d", res.value[i]);
+                printf("\n");
+            } else if (strcmp(op_str, ".") == 0) {
+                double dot = dot_prod(*v1, *v2);
+                printf("ans = %.2f\n", dot);
+            } else if (strcmp(op_str, "x") == 0) {
+                vect res = cross_prod(*v1, *v2);
+                printf("ans =");
+                for (int i = 0; i < 10; i++) printf(" %d", res.value[i]);
+                printf("\n");
+            } else {
+                printf("Error: Invalid operator.\n");
+            }
+            continue;
+        }
+        if (sscanf(line, "%s * %lf", v1_name, &scalar_val) == 2 || sscanf(line, "%lf * %s", &scalar_val, v1_name) == 2) {
+            vect* v = find_vect(v1_name);
+            if (!v) {
+                printf("Error: Vector '%s' does not exist.\n", v1_name);
+                continue;
+            }
+            vect res = scalar_mult(*v, scalar_val);
+            printf("ans =");
+            for (int i = 0; i < 10; i++) printf(" %d", res.value[i]);
+            printf("\n");
+            continue;
+        }
+        char single_name[NAME_LEN];
+        if (sscanf(line, "%s", single_name) == 1) {
+            vect* v = find_vect(single_name);
+            if (v != NULL) {
+                printf("%s =", v->name);
+                for (int i = 0; i < 10; i++) printf(" %d", v->value[i]);
+                printf("\n");
+            } else {
+                printf("Error: Vector '%s' not found.\n", single_name);
+            }
+            continue;
+        }
+
+        printf("Error: Unknown command or expression.\n");
+    }
+
     return 0;
 }
